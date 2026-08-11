@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>We Should Write Sometime &middot; Songwriter Directory</title>
+<meta name="description" content="Every songwriter in the We Should Write Sometime network. Open any writer's room.">
+<style>
+  :root{
+    --o:#f58220; --o2:#f9b479; --ink:#f4f6f8; --muted:#8e97a4; --dim:#5f6773;
+    --bg:#08090c; --panel:#111318; --line:#1e222a;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+    min-height:100vh;
+  }
+  a{color:inherit;text-decoration:none}
+
+  /* soft warm glow from the top, like the portal stage */
+  body::before{
+    content:""; position:fixed; inset:0; pointer-events:none; z-index:0;
+    background:
+      radial-gradient(60% 42% at 50% -6%, rgba(245,130,32,.14), transparent 70%),
+      radial-gradient(40% 30% at 88% 8%, rgba(249,180,121,.06), transparent 70%);
+  }
+
+  .wrap{position:relative; z-index:1; max-width:1080px; margin:0 auto; padding:56px 22px 72px}
+
+  header{margin-bottom:34px}
+  .eyebrow{
+    font-size:9.5px; letter-spacing:1.9px; text-transform:uppercase;
+    color:var(--o2); font-weight:800; margin:0 0 12px;
+  }
+  h1{
+    margin:0 0 12px; font-size:clamp(26px,4.6vw,42px); letter-spacing:-.6px;
+    line-height:1.08; font-weight:800;
+  }
+  h1 .amp{color:var(--o)}
+  .sub{margin:0; max-width:52ch; color:var(--muted); font-size:15px; line-height:1.5}
+
+  /* the one open-the-room front door: the whole-network button */
+  .allrooms{
+    display:inline-flex; align-items:center; gap:10px; margin-top:22px;
+    background:linear-gradient(180deg, rgba(245,130,32,.16), rgba(245,130,32,.06));
+    border:1px solid rgba(245,130,32,.5); color:#ffd9b3;
+    font-weight:700; font-size:14px; padding:12px 18px; border-radius:12px;
+    transition:background .2s, transform .2s, border-color .2s;
+  }
+  .allrooms:hover{background:rgba(245,130,32,.22); border-color:rgba(245,130,32,.8); color:#fff; transform:translateY(-1px)}
+  .allrooms .dot{width:7px;height:7px;border-radius:50%;background:var(--o);box-shadow:0 0 10px 1px rgba(245,130,32,.7)}
+
+  .barh{
+    display:flex; align-items:baseline; justify-content:space-between;
+    gap:12px; margin:40px 0 16px; padding-bottom:12px; border-bottom:1px solid var(--line);
+  }
+  .barh h2{margin:0; font-size:13px; letter-spacing:.4px; text-transform:uppercase; color:var(--ink); font-weight:700}
+  .count{font-size:12px; color:var(--dim); font-variant-numeric:tabular-nums}
+
+  .grid{
+    display:grid; grid-template-columns:repeat(auto-fill, minmax(232px, 1fr));
+    gap:11px;
+  }
+  .writer{
+    position:relative; display:flex; align-items:center; gap:13px;
+    background:linear-gradient(180deg,#14161c,#0e1015);
+    border:1px solid var(--line); border-radius:14px;
+    padding:13px 15px; transition:transform .18s cubic-bezier(.2,.7,.3,1), border-color .18s, background .18s;
+  }
+  .writer:hover{transform:translateY(-2px); border-color:rgba(245,130,32,.45); background:linear-gradient(180deg,#181b22,#101319)}
+  .writer .mono{
+    flex:0 0 auto; width:34px; height:34px; border-radius:9px;
+    display:grid; place-items:center; font-size:12px; font-weight:800; letter-spacing:.5px;
+    color:var(--o2); background:rgba(245,130,32,.10); border:1px solid rgba(245,130,32,.22);
+    font-variant-numeric:tabular-nums;
+  }
+  .writer .wn{flex:1 1 auto; font-size:14.5px; font-weight:600; line-height:1.2}
+  .writer .go{flex:0 0 auto; color:var(--dim); font-size:15px; transition:color .18s, transform .18s}
+  .writer:hover .go{color:var(--o); transform:translateX(2px)}
+
+  footer{margin-top:44px; padding-top:20px; border-top:1px solid var(--line); color:var(--dim); font-size:12px; line-height:1.6}
+  footer .wm{color:var(--muted); font-weight:600}
+
+  @media (max-width:520px){
+    .wrap{padding:40px 16px 56px}
+    .grid{grid-template-columns:1fr}
+    .barh{flex-direction:column; align-items:flex-start; gap:4px}
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none!important}
+  }
+  :focus-visible{outline:2px solid var(--o); outline-offset:3px; border-radius:12px}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <p class="eyebrow">We Should Write Sometime &middot; Directory</p>
+      <h1>The writers <span class="amp">&amp;</span> their rooms</h1>
+      <p class="sub">Every songwriter in the network, each with their own room. Open a writer to see who they have written with, the songs behind it, and how to get in the room.</p>
+      <a class="allrooms" href="./"><span class="dot"></span>Open the full portal</a>
+    </header>
+
+    <div class="barh">
+      <h2>Songwriters</h2>
+      <span class="count">37 in the network</span>
+    </div>
+
+    <div class="grid">
+      <a class="writer" href="?w=bobby-pinson"><span class="mono">BP</span><span class="wn">Bobby Pinson</span><span class="go" aria-hidden="true">&rarr;</span></a>
+      <a class="writer" href="?w=brett-young"><span class="mono">BY</span><span class="wn">Brett Young</span><span class="go" aria-hidden="true">&rarr;</span></a>
+      <a class="writer" href="?w=brian-white"><span class="mono">BW</span><span class="wn">Brian White</span><span class="go" aria-hidden="true">&rarr;</span></a>
+      <a class="writer" href="?w=cameron-bedell"><span class="mono">CB</span><span class="wn">Cameron Bedell</span><span class="go" aria-hidden="true">&rarr;</span></a>
+      <a class="writer" href="?w=cj-solar"><span class="mono">CS</span><span class="wn">CJ Solar</span><span class="go" aria-hidden="true">&rarr;</span></a>
+      <a class="writer" href="?w=cole-taylor"><span class="mono">CT</span><span class="wn">Cole Taylor</span><span class="go" aria-hidden="true">&rarr;</span></a>
+      <a class="writer" href="?w=david-j"><span class="mono">DJ</span><span class="wn">David J</span><span class="go" aria-hidden="true">&rarr;</span></a>
+      <a class="writer" href="?w=dean-dillon"><span class="mono">DD</span><span class="wn">Dean Dillon</span><span class="go" aria-hidden="true">&rarr;</span></a>
+      <a class="writer" href="?w=eric-church"><span class="mono">EC</span><span class="wn">Eric Church</span><span class="go" aria-hidden="true">&rarr;</span></a>
+      <a class="writer" href="?w=eric-paslay"><span class="mono">EP</span><span class="wn">Eric Paslay</span><span class="go" aria-hidden="true">&rarr;</span></a>
+      <a class="writer" href="?w=ernest"><span class="mono">ER</span><span class="wn">ERNEST</span><span class="go" aria-hidden="true">&rarr;</span></a>
+      <a class="writer" href="?w=hardy"><span class="mono">HA</span><span class="wn">Hardy</span><span class="go" aria-hidden="true">&rarr;</span></a>
+      <a class="writer" href="?w=heath-warren"><span class="mono">HW</span><span class="wn">Heath Warren</span><span class="go" aria-hidden="true">&rarr;</span></a>
+      <a class="writer" href="?w=jason-ingram"><span class="mono">JI</span><span class="wn">Jason Ingram</span><span class="go" aria-hidden="true">&rarr;</span></a>
+      <a class="writer" href="?w=jeffrey-steele"><span class="mono">JS</span><span class="wn">Jeffrey Steele</span><span class="go" aria-hidden="true">&rarr;</span></a>
+      <a class="writer" href="?w=jelly-roll"><span class="mono">JR</span><span class="wn">Jelly Roll</span><span class="go" aria-hidden="true">&rarr;</span></a>
+      <a class="writer" href="?w=jeremy-stover"><span class="mono">JS</span><span class="wn">Jeremy Stover</span><span class="go" aria-hidden="true">&rarr;</span></a>
+      <a class="writer" href="?w=jesse-frasure"><span class="mono">JF</span><span class="wn">Jesse Frasure</span><span class="go" aria-hidden="true">&rarr;</span></a>
+      <a class="writer" href="?w=jim-mccormick"><span class="mono">JM</span><span class="wn">Jim McCormick</span><span class="go" aria-hidden="true">&rarr;</span></a>
+      <a class="writer" href="?w=kelly-archer"><span class="mono">KA</span><span class="wn">Kelly Archer</span><span class="go" aria-hidden="true">&rarr;</span></a>
+      <a class="writer" href="?w=kenny-chesney"><span class="mono">KC</span><span class="wn">Kenny Chesney</span><span class="go" aria-hidden="true">&rarr;</span></a>
+      <a class="writer" href="?w=liz-rose"><span class="mono">LR</span><span class="wn">Liz Rose</span><span class="go" aria-hidden="true">&rarr;</span></a>
+      <a class="writer" href="?w=luke-combs"><span class="mono">LC</span><span class="wn">Luke Combs</span><span class="go" aria-hidden="true">&rarr;</span></a>
+      <a class="writer" href="?w=luke-laird"><span class="mono">LL</span><span class="wn">Luke Laird</span><span class="go" aria-hidden="true">&rarr;</span></a>
+      <a class="writer" href="?w=matt-mulhare"><span class="mono">MM</span><span class="wn">Matt Mulhare</span><span class="go" aria-hidden="true">&rarr;</span></a>
+      <a class="writer" href="?w=noah-hicks"><span class="mono">NH</span><span class="wn">Noah Hicks</span><span class="go" aria-hidden="true">&rarr;</span></a>
+      <a class="writer" href="?w=phil-vassar"><span class="mono">PV</span><span class="wn">Phil Vassar</span><span class="go" aria-hidden="true">&rarr;</span></a>
+      <a class="writer" href="?w=randy-montana"><span class="mono">RM</span><span class="wn">Randy Montana</span><span class="go" aria-hidden="true">&rarr;</span></a>
+      <a class="writer" href="?w=smith-ahnquist"><span class="mono">SA</span><span class="wn">Smith Ahnquist</span><span class="go" aria-hidden="true">&rarr;</span></a>
+      <a class="writer" href="?w=tommy-karlas"><span class="mono">TK</span><span class="wn">Tommy Karlas</span><span class="go" aria-hidden="true">&rarr;</span></a>
+      <a class="writer" href="?w=tone-jones"><span class="mono">TJ</span><span class="wn">Tone Jones</span><span class="go" aria-hidden="true">&rarr;</span></a>
+      <a class="writer" href="?w=travis-denning"><span class="mono">TD</span><span class="wn">Travis Denning</span><span class="go" aria-hidden="true">&rarr;</span></a>
+      <a class="writer" href="?w=tyler-reeve"><span class="mono">TR</span><span class="wn">Tyler Reeve</span><span class="go" aria-hidden="true">&rarr;</span></a>
+      <a class="writer" href="?w=vince-gill"><span class="mono">VG</span><span class="wn">Vince Gill</span><span class="go" aria-hidden="true">&rarr;</span></a>
+      <a class="writer" href="?w=waka-flocka-flame"><span class="mono">WF</span><span class="wn">Waka Flocka Flame</span><span class="go" aria-hidden="true">&rarr;</span></a>
+      <a class="writer" href="?w=walker-hayes"><span class="mono">WH</span><span class="wn">Walker Hayes</span><span class="go" aria-hidden="true">&rarr;</span></a>
+      <a class="writer" href="?w=zach-john-king"><span class="mono">ZJ</span><span class="wn">Zach John King</span><span class="go" aria-hidden="true">&rarr;</span></a>
+    </div>
+
+    <footer>
+      <span class="wm">We Should Write Sometime</span> &middot; each link opens the same portal locked to that writer.<br>
+      Tap a name to open their room, or open the full portal to move between all three views.
+    </footer>
+  </div>
+</body>
+</html>
