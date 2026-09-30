@@ -294,8 +294,8 @@
     var go=function(html){
       var _out=html;
       if(key==='song' && LOCKW){ var _cfg='<scr'+'ipt>window.WSWS_SONGLOCK='+JSON.stringify(LOCKW)+';<\/scr'+'ipt>'; var _css='<sty'+'le>.tab[data-tab="room"],.tab[data-tab="insights"]{display:none!important;}#sgAllRow{display:none!important;}</sty'+'le>'; _out = html.indexOf('<head>')>=0 ? html.replace('<head>','<head>'+_cfg+_css) : (_cfg+_css+html); }
-      frame.onload=function(){load.style.display='none'; if(LOCKW){ var _hideT=function(){ try{ var _fd=frame.contentDocument||frame.contentWindow.document; if(!_fd)return; ['room','insights'].forEach(function(_t){ var _el=_fd.querySelector('.tab[data-tab="'+_t+'"]'); if(_el)_el.style.setProperty('display','none','important'); }); var _sa=_fd.getElementById('sgAllRow'); if(_sa)_sa.style.setProperty('display','none','important'); }catch(_){} };
-      frame.srcdoc=_out; _hideT(); var _hc=0; var _hi=setInterval(function(){ _hideT(); if(++_hc>20)clearInterval(_hi); }, 500); } };
+      frame.onload=function(){ load.style.display='none'; };
+      frame.srcdoc=_out;
       setTimeout(function(){load.style.display='none';},2500);
     };
     if(cache[key])return go(cache[key]);
