@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Room Insights &middot; We Should Write Sometime</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23101014'/%3E%3Ctext x='32' y='42' font-family='Georgia,serif' font-style='italic' font-size='34' fill='%23F58220' text-anchor='middle'%3EWS%3C/text%3E%3C/svg%3E">
+<style>
+:root{--ink:#101014;--ember:#F58220;--peach:#F9B479;--slate:#3a3a44;--line:#26262e;--panel:#17171d;--panel2:#1e1e26}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ink);color:#f2ede6;font-family:Arial,Helvetica,sans-serif;font-size:17px;line-height:1.65}
+.wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+.eyebrow{font-family:"Courier New",monospace;color:var(--ember);font-size:14px;letter-spacing:2px;text-transform:uppercase}
+h1,h2,h3{font-family:Cambria,Georgia,serif;font-weight:normal;line-height:1.25;margin:0 0 12px}
+h1{font-size:44px} h1 em{color:var(--peach);font-style:italic}
+h2{font-size:32px;margin-top:64px} h2 em{color:var(--peach);font-style:italic}
+h3{font-size:22px}
+.lede{color:#b9b2a8;font-size:19px;max-width:720px}
+header.site{padding:56px 0 8px}
+.hero-stats{display:flex;flex-wrap:wrap;gap:14px;margin:32px 0 8px}
+.hstat{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 22px;min-width:150px;flex:1}
+.hstat .n{font-family:Cambria,Georgia,serif;font-size:34px;color:var(--ember)}
+.hstat .l{font-size:14px;color:#b9b2a8;margin-top:4px}
+.tabs{display:flex;flex-wrap:wrap;gap:10px;margin:24px 0}
+.tab{background:var(--panel2);border:1px solid var(--line);color:#f2ede6;border-radius:20px;padding:9px 18px;font-size:15px;cursor:pointer;font-family:inherit}
+.tab.on{background:var(--ember);border-color:var(--ember);color:#160c04;font-weight:700}
+.rank{display:none;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:8px 0;overflow:hidden}
+.rank.on{display:block}
+.rrow{display:flex;align-items:center;gap:16px;padding:12px 22px;border-bottom:1px solid var(--line)}
+.rrow:last-child{border-bottom:none}
+.rnum{font-family:Cambria,Georgia,serif;font-size:24px;color:var(--ember);width:44px;flex:none}
+.rname{flex:1;font-size:18px}
+.rname a{color:#f2ede6;text-decoration:none;border-bottom:1px dotted var(--ember)}
+.rname a:hover{color:var(--peach)}
+.rstat{color:#b9b2a8;font-size:15px;text-align:right}
+.pill{font-size:12px;background:var(--ember);color:#160c04;border-radius:10px;padding:2px 10px;font-weight:700;margin-left:10px;white-space:nowrap}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;margin-top:24px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:24px}
+.card h3{color:var(--peach);font-style:italic;margin-bottom:10px}
+.card p{margin:0;color:#d8d2c8;font-size:16px}
+.rec .who{font-family:Cambria,Georgia,serif;font-size:22px;margin-bottom:8px}
+.rec .who a{color:#f2ede6;text-decoration:none;border-bottom:1px dotted var(--ember)}
+.rec .why{color:#d8d2c8;font-size:16px;margin-bottom:14px}
+.rec .meta{font-size:14px;color:#b9b2a8}
+.btn{display:inline-block;background:var(--ember);color:#160c04;font-weight:700;border-radius:10px;padding:10px 20px;text-decoration:none;font-size:15px;border:none;cursor:pointer;font-family:inherit}
+.btn.ghost{background:transparent;color:var(--peach);border:1px solid var(--ember)}
+.future .card h3{color:var(--ember)}
+footer.site{margin:72px 0 48px;padding-top:24px;border-top:1px solid var(--line);color:#b9b2a8;font-size:15px}
+footer.site a{color:var(--peach)}
+.topnav{display:flex;gap:10px;flex-wrap:wrap;margin-top:28px}
+.note{color:#8d877d;font-size:14px;margin-top:28px}
+@media(max-width:640px){h1{font-size:32px}h2{font-size:26px}body{font-size:16px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="site">
+<div class="eyebrow">Every Room &middot; Network intelligence</div>
+
+<p class="lede">Every room, every co-write, every chart peak, mapped as one network. These are the patterns that fall out when you stop looking at songs one at a time and start looking at all of them at once.</p>
+<div class="topnav">
+<a class="btn ghost" href="index.html" id="backPortals">&larr; Portals</a>
+<button class="btn" id="openMap">Open the map</button>
+</div>
+<div class="hero-stats" id="heroStats"></div>
+</header>
+
+<h2>The <em>power rankings</em></h2>
+<p class="lede">Five leaderboards, computed from the rooms themselves. Tap any name to see them on the map.</p>
+<div class="tabs" id="rankTabs">
+<button class="tab on" data-r="connected">Most connected</button>
+<button class="tab" data-r="streamed">Most streamed</button>
+<button class="tab" data-r="ones">Most number ones</button>
+<button class="tab" data-r="rate">Highest hit rate</button>
+<button class="tab" data-r="triple">Every world at once</button>
+</div>
+<div id="rankBody"></div>
+<p class="note">Hit rate counts chart toppers across all eight Billboard charts tracked on the platform, for writers with at least 20 songs on the map. Country number ones are counted off Country Airplay, the way the industry counts them.</p>
+
+<h2><em>Did you know</em></h2>
+<div class="cards" id="factCards"></div>
+
+<h2>Rooms that <em>should happen</em></h2>
+<p class="lede">The map knows who has never been in a room together but shares the same rooms with everyone else. These are the pairings with the most mutual collaborators and no shared song. Yet.</p>
+<div class="cards" id="recCards"></div>
+
+<h2>Where this <em>goes</em></h2>
+<p class="lede">This is what the network makes possible next. None of it exists anywhere else, because nobody else wrote the rooms down.</p>
+<div class="cards future">
+<div class="card"><h3>Hit chemistry scores</h3><p>Every pairing the map has never seen gets a score: shared collaborators, world overlap, hit rate. A&amp;R will see the highest expected value rooms before they happen.</p></div>
+<div class="card"><h3>The missing link</h3><p>Writers two hops from hitmakers who have never been in the room. That is tomorrow's roster, identified today, before anyone else knows their name.</p></div>
+<div class="card"><h3>Room alerts</h3><p>Two of your collaborators just wrote together. The network watches itself now, and tells you where the heat is while the session is still warm.</p></div>
+<div class="card"><h3>Catalog valuation</h3><p>Price a catalog by network centrality and hit rate, not trailing royalties. A 24.5 percent hit rate is a number no multiple has ever captured.</p></div>
+<div class="card"><h3>Cross-world arbitrage</h3><p>Six writers have won in all three worlds. Writers with that DNA are systematically undervalued in the worlds they have not worked yet. The map names them.</p></div>
+<div class="card"><h3>The fan game</h3><p>Six degrees of every room, for fans. Connect any two artists through the rooms between them. Nobody else can offer it, because nobody else wrote it down.</p></div>
+</div>
+
+<footer class="site">
+Built from the Every Room network: 70 catalogs, 5,443 people, 27,147 rooms. Publicly available data only, gathered for this demo. Not a complete or verified account of anyone's catalog or collaborations.<br><br>
+<a href="index.html" id="footPortals">Back to the portals</a> &middot; <a href="everyroom.html" id="footMap">Open Every Room</a> &middot; <a href="directory.html">Writer directory</a>
+</footer>
+</div>
+<script>
+var INS = {"hero":{"streams":"255.9B","songs":"7,592","people":"5,443","rooms":"27,147","catalogs":"70"},"connected":[{"n":"Waka Flocka Flame","c":322,"w":true},{"n":"Ashley Gorley","c":298,"w":true},{"n":"Brian White","c":265,"w":true},{"n":"Kelly Archer","c":261,"w":true},{"n":"ERNEST","c":259,"w":true},{"n":"Laura Veltz","c":249,"w":true},{"n":"Jesse Frasure","c":247,"w":true},{"n":"Morgan Wallen","c":238,"w":true},{"n":"Kenny Chesney","c":237,"w":true},{"n":"Craig Wiseman","c":235,"w":true}],"streamed":[{"n":"Amy Allen","s":"40.4B","songs":148},{"n":"Morgan Wallen","s":"34.8B","songs":143},{"n":"Ashley Gorley","s":"34.4B","songs":269},{"n":"ERNEST","s":"31.5B","songs":240},{"n":"Luke Combs","s":"19.5B","songs":135},{"n":"Hardy","s":"13.6B","songs":256},{"n":"Shane McAnally","s":"13.5B","songs":224},{"n":"Chris Stapleton","s":"10.9B","songs":131},{"n":"John Byron","s":"8.1B","songs":122},{"n":"Luke Laird","s":"7.4B","songs":167}],"ones":[{"n":"Ashley Gorley","o":66,"songs":269},{"n":"Kenny Chesney","o":28,"songs":206},{"n":"Shane McAnally","o":23,"songs":224},{"n":"Luke Laird","o":22,"songs":167},{"n":"Jesse Frasure","o":18,"songs":195},{"n":"Luke Combs","o":18,"songs":135},{"n":"Morgan Wallen","o":17,"songs":143},{"n":"ERNEST","o":14,"songs":240},{"n":"Hardy","o":13,"songs":256},{"n":"Dean Dillon","o":12,"songs":147}],"rate":[{"n":"Ashley Gorley","r":"24.5%","o":66,"s":269},{"n":"Kenny Chesney","r":"13.6%","o":28,"s":206},{"n":"Luke Combs","r":"13.3%","o":18,"s":135},{"n":"Luke Laird","r":"13.2%","o":22,"s":167},{"n":"Brett Young","r":"12.2%","o":6,"s":49},{"n":"Morgan Wallen","r":"11.9%","o":17,"s":143},{"n":"Shane McAnally","r":"10.3%","o":23,"s":224},{"n":"Bailey Zimmerman","r":"9.4%","o":3,"s":32},{"n":"Jesse Frasure","r":"9.2%","o":18,"s":195},{"n":"Jason Ingram","r":"8.2%","o":6,"s":73}],"triple":[{"n":"Luke Laird","s":"7.4B","ones":22},{"n":"Jesse Frasure","s":"6.2B","ones":18},{"n":"Jelly Roll","s":"5.5B","ones":7},{"n":"Tim Nichols","s":"2.2B","ones":5},{"n":"Walker Hayes","s":"1.3B","ones":1},{"n":"Steve Fee","s":"493M","ones":0}],"facts":[{"t":"Eight handshakes","b":"The two most distant people on this map, Porter McKnight and Edward Ford, connect in 8 hops. All 5,443 people on the map are closer than that."},{"t":"139 songs, one room","b":"Jeremy Stover and Justin Moore have written 139 songs together. No pair on the map has shared more rooms."},{"t":"The biggest song is family","b":"Espresso has 3.1B streams, the most of any song on the map. It was co-written by Amy Allen, one of the 70. Her catalog totals 40.4B streams."},{"t":"One in four goes to number one","b":"Ashley Gorley has 66 chart toppers on the map, and nearly one in four songs he touches reaches number one."},{"t":"52 writers, one song","b":"The most crowded credit on the map is the Pitch Perfect 2 \"Riff Off\" medley: 52 writers on one track."},{"t":"Three worlds, 6 writers","b":"Only 6 writers have charted in Country, Pop, and Christian: Luke Laird, Jesse Frasure, Jelly Roll, Tim Nichols, Walker Hayes, Steve Fee."}],"recs":[{"a":"Cole Taylor","b":"Morgan Wallen","n":54,"shared":["Alexander Ludwig","Corey Crowder","Dustin Lynch","Jordan Minton"],"wa":["Country","Pop"],"wb":["Country","Pop"]},{"a":"Ashley Gorley","b":"Randy Montana","n":53,"shared":["Dustin Lynch","James McNair","Jordan Davis","Lindsay Rimes"],"wa":["Country","Pop"],"wb":["Country","Pop"]},{"a":"Ashley Gorley","b":"Laura Veltz","n":51,"shared":["Bailey Zimmerman","Busbee","Eric Paslay","Jessie Jo Dillon"],"wa":["Country","Pop"],"wb":["Country","Pop"]},{"a":"Cole Taylor","b":"Jessie Jo Dillon","n":49,"shared":["Alex Maxwell","Drew Parker","Hardy","Jordan Schmidt"],"wa":["Country","Pop"],"wb":["Country","Pop"]},{"a":"Jessie Jo Dillon","b":"John Byron","n":48,"shared":["Dylan Scott","Hardy","Julian Bunetta","Nate Smith"],"wa":["Country","Pop"],"wb":["Country","Pop"]},{"a":"Ashley Gorley","b":"Cole Taylor","n":47,"shared":["Brantley Gilbert","Drew Parker","Dustin Lynch","Hardy"],"wa":["Country","Pop"],"wb":["Country","Pop"]},{"a":"Ashley Gorley","b":"Craig Wiseman","n":46,"shared":["Dustin Lynch","Eric Paslay","HIXTAPE","James McNair"],"wa":["Country","Pop"],"wb":["Country","Pop"]},{"a":"Craig Wiseman","b":"Jesse Frasure","n":44,"shared":["Corey Crowder","Eric Paslay","Hailey Whitters","Rhett Akins"],"wa":["Country","Pop"],"wb":["Christian","Country","Pop"]}]};
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;')}
+function wlink(n){return '<a href="#" onclick="goWriter(\''+n.replace(/'/g,"\\'")+'\');return false;">'+esc(n)+'</a>'}
+function goWriter(name){
+  try{
+    if(window.parent && window.parent!==window){
+      window.parent.postMessage({type:'wsws:goApp',app:'net',focus:{writer:name}},'*');
+      return;
+    }
+  }catch(e){}
+  try{sessionStorage.setItem('wsws:focus',JSON.stringify({writer:name}));}catch(e){}
+  location.href='everyroom.html';
+}
+window.goWriter=goWriter;
+(function(){
+  var h=INS.hero;
+  var stats=[['Streams',h.streams],['Songs',h.songs],['People',h.people],['Rooms',h.rooms],['Catalogs',h.catalogs]];
+  document.getElementById('heroStats').innerHTML=stats.map(function(s){
+    return '<div class="hstat"><div class="n">'+s[1]+'</div><div class="l">'+s[0]+'</div></div>';
+  }).join('');
+})();
+var R={
+  connected:{title:'Most connected',rows:INS.connected.map(function(r,i){
+    return {n:r.n,c:r.c,stat:r.c+' collaborators',pill:r.w?'platform writer':''};})},
+  streamed:{title:'Most streamed catalogs',rows:INS.streamed.map(function(r){
+    return {n:r.n,stat:r.s+' streams &middot; '+r.songs+' songs'};})},
+  ones:{title:'Most number ones',rows:INS.ones.map(function(r){
+    return {n:r.n,stat:r.o+' number ones &middot; '+r.songs+' songs'};})},
+  rate:{title:'Highest hit rate',rows:INS.rate.map(function(r){
+    return {n:r.n,stat:r.r+' &middot; '+r.o+' of '+r.s+' songs'};})},
+  triple:{title:'Charted in Country, Pop, and Christian',rows:INS.triple.map(function(r){
+    return {n:r.n,stat:r.s+' streams &middot; '+r.ones+' number ones'};})}
+};
+function renderRank(key){
+  var r=R[key],h='';
+  r.rows.forEach(function(row,i){
+    h+='<div class="rrow"><div class="rnum">'+(i+1)+'</div><div class="rname">'+wlink(row.n)+
+       (row.pill?'<span class="pill">'+row.pill+'</span>':'')+'</div><div class="rstat">'+row.stat+'</div></div>';
+  });
+  document.getElementById('rankBody').innerHTML='<div class="rank on">'+h+'</div>';
+}
+document.getElementById('rankTabs').addEventListener('click',function(e){
+  var b=e.target.closest('.tab');if(!b)return;
+  document.querySelectorAll('#rankTabs .tab').forEach(function(t){t.classList.remove('on')});
+  b.classList.add('on');renderRank(b.dataset.r);
+});
+renderRank('connected');
+(function(){
+  document.getElementById('factCards').innerHTML=INS.facts.map(function(f){
+    return '<div class="card"><h3>'+esc(f.t)+'</h3><p>'+esc(f.b)+'</p></div>';
+  }).join('');
+  document.getElementById('recCards').innerHTML=INS.recs.map(function(r){
+    var why=r.a+' and '+r.b+' share '+r.n+' mutual collaborators, including '+r.shared.join(', ')+
+      '. They have never written together.'+
+      (r.wa.length||r.wb.length?' '+r.a+' brings '+r.wa.join(' and ')+'; '+r.b+' brings '+r.wb.join(' and ')+'.':'');
+    return '<div class="card rec"><div class="who">'+wlink(r.a)+' <span style="color:#F58220">&middot;</span> '+wlink(r.b)+
+      '</div><div class="why">'+esc(why)+'</div><div class="meta">'+r.n+' mutual collaborators</div></div>';
+  }).join('');
+})();
+document.getElementById('openMap').onclick=function(){
+  try{
+    if(window.parent && window.parent!==window){
+      window.parent.postMessage({type:'wsws:goApp',app:'net'},'*');return;
+    }
+  }catch(e){}
+  location.href='everyroom.html';
+};
+(function(){
+  var framed=false;
+  try{framed=window.parent&&window.parent!==window;}catch(e){}
+  if(framed){
+    ['backPortals','footPortals'].forEach(function(id){
+      var a=document.getElementById(id);if(a)a.style.display='none';
+    });
+    var fm=document.getElementById('footMap');
+    if(fm){fm.href='#';fm.onclick=function(){document.getElementById('openMap').click();return false;};}
+  }
+})();
+</script>
+</body>
+</html>
