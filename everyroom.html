@@ -600,7 +600,7 @@ let PL=new Map(), PSZ=new Map(), PINT=0, PINRMAX=0;
 // Pin mode mirrors the Roster Network: uniform dot size per cut tier, tier
 // colours, cut count inside the dot, bands ringed most-cuts-innermost.
 let PABS=new Map(), PTIER=new Map(), PCUT=new Map(), PINR2=0;
-const RN_R={1:15.5,2:12.5,3:10.5}, RN_RING={1:118,2:203,3:292}, RN_ARC={1:60,2:38,3:26};
+const RN_R={1:14,2:11.5,3:10}, RN_RING={1:150,2:258,3:368}, RN_ARC={1:60,2:38,3:26};
 const RN_W={1:'#ffb060',2:'#b57bff',3:'#7c8aa0'}, RN_A={1:'#37b6ff',2:'#5aa0e0',3:'#6b8299'};
 function rnCol(n){var t=PTIER.get(n.i)||3; return (n.t===1?RN_A:RN_W)[t];}
 const N=D.nodes.map((n,i)=>({i,id:n[0],t:n[1],c:n[2],x:n[3],y:n[4],deg:n[5],cats:n[6]}));
@@ -778,19 +778,20 @@ if(isPick){ const sc=pairCount(PIN,n); ring=sc?TIER_DOT[TIER(sc)]:'rgba(255,255,
 else if(isArt) ring=ART_DOT;
 else ring='#7ee0d3'; }
 let body=HUES[n.c%HUES.length];
-if(isPin) body='#ffc454';
+if(isPin) body='#ffb347';
 else if(isArt) body=ART_DOT;
 else if(isCo&&!isPick) body='#7ee0d3';
 else if(isPick){ const sc=pairCount(PIN,n); body=sc?TIER_DOT[TIER(sc)]:body; }
-const r=Math.max(3.5, rad(n)*cam.z*(isPin?1.45:1.12));var _dim=PSELIDS&&!isPin&&!PSELIDS.has(i);X.save();if(_dim)X.globalAlpha=0.34;
+const r=Math.max(3.5, rad(n)*cam.z);var _dim=PSELIDS&&!isPin&&!PSELIDS.has(i);X.save();if(_dim)X.globalAlpha=0.34;
 
 // contact shadow on the ground plane sells the height
 X.save(); X.fillStyle='rgba(0,0,0,.5)';
 X.beginPath(); X.ellipse(p.x, p.y+LIFT+r*0.55, r*0.95, r*0.32, 0, 0, 7); X.fill(); X.restore();
 
-const bg=X.createRadialGradient(p.x,p.y,r*0.4,p.x,p.y,r*2.7);
-bg.addColorStop(0,'rgba(255,255,255,.16)'); bg.addColorStop(1,'rgba(255,255,255,0)');
-X.fillStyle=bg; X.beginPath(); X.arc(p.x,p.y,r*2.7,0,7); X.fill();
+const _bm=isPin?2.7:1.9;
+const bg=X.createRadialGradient(p.x,p.y,r*0.4,p.x,p.y,r*_bm);
+bg.addColorStop(0, body+(isPin?'40':'26')); bg.addColorStop(1, body+'00');
+X.fillStyle=bg; X.beginPath(); X.arc(p.x,p.y,r*_bm,0,7); X.fill();
 
 X.save(); X.shadowColor='rgba(0,0,0,.75)'; X.shadowBlur=18; X.shadowOffsetY=8;
 const base=body, gr=hueGrad(base);
@@ -798,13 +799,15 @@ const og=X.createRadialGradient(p.x-r*0.32,p.y-r*0.36,r*0.12,p.x,p.y,r*1.06);
 og.addColorStop(0,gr[0]); og.addColorStop(0.55,base); og.addColorStop(1,gr[1]);
 X.fillStyle=og; X.beginPath(); X.arc(p.x,p.y,r,0,7); X.fill(); X.restore();
 
-const pulse=isPin?1+Math.sin(T*2.4)*0.07:1;
-X.beginPath(); X.arc(p.x,p.y,(r+3)*pulse,0,7);
-X.strokeStyle=ring; X.lineWidth=isPin?3:2.3; X.stroke();
+X.beginPath(); X.arc(p.x,p.y,r,0,7);
+X.lineWidth=Math.max(.6,r*.07); X.strokeStyle=gr[0]+'cc'; X.stroke();
+if(isPin){ X.beginPath(); X.arc(p.x,p.y,r,0,7); X.lineWidth=Math.max(1.5,r*.12); X.strokeStyle='#fff6e0'; X.stroke(); }
+else if(isPick){ X.beginPath(); X.arc(p.x,p.y,r,0,7); X.lineWidth=2.5; X.strokeStyle='#ffb347'; X.stroke(); }
+else { X.beginPath(); X.arc(p.x,p.y,r+3,0,7); X.lineWidth=2.3; X.strokeStyle=ring; X.stroke(); }
 if(isArt&&!isPin){ X.beginPath(); X.arc(p.x,p.y,r*0.42,0,7);
 X.fillStyle='rgba(255,255,255,.85)'; X.fill(); }
 
-X.restore();var _lok=(n.t===2)?true:(n.cats>=3?cam.z>=1.0:cam.z>=1.7);if(!_dim&&_lok)LBL.push({n:n,p:p,r:r,ring:ring,isPin:isPin,isPick:isPick});
+X.restore();var _lok=(n.t===2)?true:(n.cats>=3?cam.z>=0.62:cam.z>=1.05) /* v330: dot labels reveal sooner */;if(!_dim&&_lok)LBL.push({n:n,p:p,r:r,ring:ring,isPin:isPin,isPick:isPick});
 });
 
 var LR=[];
@@ -812,19 +815,16 @@ LBL.sort(function(o1,o2){return (o2.isPin?2:(o2.isPick?1:0))-(o1.isPin?2:(o1.isP
 LBL.forEach(function(o){
 var n=o.n,p=o.p,r=o.r,ring=o.ring,isPin=o.isPin;
 var fs=isPin?13:11.5;
-X.font=(isPin?'700 ':'600 ')+fs+'px ui-sans-serif,-apple-system,sans-serif';
+X.font=(isPin?'700 ':'500 ')+fs+'px ui-sans-serif,-apple-system,sans-serif';
 X.textAlign='center';X.textBaseline='alphabetic';
 var tw=X.measureText(n.id).width, ly=p.y-r-10;
 var bx=p.x-tw/2-7, by=ly-fs+1, bw=tw+14, bh=fs+7, clash=false;
 for(var q=0;q<LR.length;q++){var R=LR[q];if(bx<R.x+R.w&&bx+bw>R.x&&by<R.y+R.h&&by+bh>R.y){clash=true;break;}}
 if(clash&&!isPin&&cam.z<2.4)return;
 LR.push({x:bx,y:by,w:bw,h:bh});
-X.fillStyle='rgba(8,11,15,.85)';X.beginPath();
-if(X.roundRect)X.roundRect(bx,by,bw,bh,5);else X.rect(bx,by,bw,bh);
-X.fill();
-X.strokeStyle=ring;X.lineWidth=1;X.globalAlpha=.45;X.stroke();X.globalAlpha=1;
-X.fillStyle=isPin?'#ffd98a':'#eef4fb';
-X.fillText(n.id,p.x,ly+3);
+X.save();X.shadowColor='rgba(0,0,0,.9)';X.shadowBlur=5;
+X.fillStyle=isPin?'#ffe9a8':'#eef4fb';
+X.fillText(n.id,p.x,ly+3);X.restore();
 });
 // state badge
 const lines=PINSET.size+PINART.size+PINCO.length;
@@ -866,10 +866,10 @@ for(var k=0;k<count;k++){ var a=a0+(2*Math.PI*k)/count;
 PL.set(arr[i2+k].i,{x:PIN.x+R*Math.cos(a),y:PIN.y+R*Math.sin(a)}); }
 i2+=count; ring++; if(R>PINRMAX) PINRMAX=R; R+=GAP[t]; }
 cursor=PINRMAX; if(t<=2) PINR2=PINRMAX; });
-// keep dots the same size on screen no matter how big the crowd got
-var sc=PINRMAX/300; if(sc<1) sc=1; if(sc>2.4) sc=2.4;
-PABS.set(PIN.i,24*sc);
-PTIER.forEach(function(t,k){ if(k!==PIN.i) PABS.set(k, RN_R[t]*sc); });
+// v339: dot sizes are the Your Network tab's own node radii, absolute
+// (centre 24, tiers RN_R), with no crowd scaling on top
+PABS.set(PIN.i,24);
+PTIER.forEach(function(t,k){ if(k!==PIN.i) PABS.set(k, RN_R[t]); });
 }
 function recenterPin(){
 if(!PIN) return;
@@ -1217,6 +1217,21 @@ var span=Math.max(x1-x0,y1-y0,200);
 var pad=(Math.min(W,H)<520)?1.02:1.12;
 cam.tz=Math.max(.5,Math.min(2.2, Math.min(W,H)/(span*pad)));
 }
+/* v327: writer world names run smaller while the map is pulled back,
+   so 154 worlds can share one frame without sitting on each other,
+   then grow back to the classic size as you lean in */
+function WFZ(){ var r=(typeof ANI_Z0!=='undefined'&&ANI_Z0>0)?cam.z/ANI_Z0:1; var v=0.60*Math.pow(Math.max(r,0.05),0.62); if(typeof H!=='undefined'&&H<920) v*=Math.max(0.62,H/920); if(v<0.40)v=0.40; if(v>1.85)v=1.85; return v; } /* v329: world names scale with the zoom ratio: about 10px on entry, growing steadily as you lean into a world, so a world name always reads as the main name of its world; in short frames they also step down with the frame height, where the density gate is on */ /* v328: portal only. In a short frame the whole world compresses until even small names crowd, so world names shrink a little further as the frame pulls back, with a floor that keeps them legible. At and above the usual working zoom this is exactly the v327 factor. */
+/* v328: density gate. Below z .108 (a short frame) even small names cannot all fit at once, so the busiest worlds keep their names and the rest arrive as you lean in, the same idea as the mobile top-N, sized by how much frame there is. */
+var _TOPPW=null,_TOPPW_AREA=0;
+function pwTopSet(){ var area=(typeof W!=='undefined'&&W?W:1200)*(typeof H!=='undefined'&&H?H:800);
+if(_TOPPW&&Math.abs(area-_TOPPW_AREA)<=_TOPPW_AREA*.15) return _TOPPW;
+var n=Math.max(56,Math.min(154,Math.round(area/9800))); /* v329: fewer names admitted in short frames */
+_TOPPW=new Set(N.filter(function(x){return x.t===2;}).sort(function(_p,_q){return (_q.deg||0)-(_p.deg||0);}).slice(0,n).map(function(x){return x.i;}));
+_TOPPW_AREA=area; return _TOPPW; }
+function pwGate(n){ if(!(((typeof H!=='undefined')&&H<920)||cam.z<ANI_Z0*0.92)) return false; /* v329: the gate engages in short frames, or when the view is zoomed back out past the opening frame */ if(typeof PIN!=='undefined'&&PIN) return false;
+if(typeof FILTER!=='undefined'&&FILTER) return false; if(typeof path!=='undefined'&&path&&path.length) return false;
+if(n===hov||n===sel) return false; if(typeof ROUTEN!=='undefined'&&ROUTEN.has(n.i)) return false;
+return !pwTopSet().has(n.i); }
 function fitAll(){
 var vis=(typeof inFilter==='function')?N.filter(inFilter):N;
 if(!vis.length){ cam.tz=.62; cam.x=0; cam.y=0; return; }
@@ -1241,7 +1256,7 @@ ANI_A0=1; cam.tz=Math.min(1.5, Math.min(W,H)/(span*pad));
 }else{
 var A=EVEN?1:((W/H)/(cw/ch)); A=Math.max(0.6, Math.min(2.2, A)); ANI_A0=A;
 var sA=Math.sqrt(A), padX=small?1.10:1.17, padY=small?1.18:1.26;
-cam.tz=Math.min(1.5, Math.min(W/(cw*sA*padX), H*sA/(ch*padY)))*((window.matchMedia&&matchMedia('(max-width:820px)').matches)?0.52:1.35); /* open one zoom-click in for roomier spacing */
+cam.tz=Math.min(1.5, Math.min(W/(cw*sA*padX), H*sA/(ch*padY)))*((window.matchMedia&&matchMedia('(max-width:820px)').matches)?0.52:1.22); /* v329: fill more of the frame on entry */ /* v327: no open-in boost; at 154 worlds the whole map frames at its natural fit, with margin around it */
 ANI_Z0=cam.tz;
 }
 if(typeof _ww!=='undefined' && _ww){
@@ -1253,6 +1268,58 @@ var _vc=(typeof vcx==='function')?vcx():(W/2);
 cam.x=_fcx-(W/2-_vc)/(cam.tz*sA); cam.y=_fcy; }
 _fitOK=1; if(_firstFit){ cam.z=cam.tz; _firstFit=0; }
 }
+/* v328: star twinkle, second take, portal surface only. The NAMES are
+   the stars: a name takes a soft star color and glows for a moment,
+   fades back to white, and the rotation moves on to other names at
+   random, a few at a time, never a light show. It starts when the
+   whole-world view is entered and again on every Start Over, and it
+   stops for good at the first interaction of any kind inside this
+   document (pointer, wheel, touch, keys, search) until the next
+   Start Over or fresh entry. It never runs on filtered, traced or
+   pinned views, never under prefers-reduced-motion, and the dots
+   themselves never light up. While it runs the body carries
+   data-twinkle="on" so the state is visible to tests. */
+var TWK={on:false,init:false,lit:{},recent:{},lastAdd:0};
+var TWKCOLS=['#ffffff','#f9b479','#f58220','#ffd98a','#cfe8ff'];
+var TWKK=6, TWKDUR=1700, TWKEVERY=420; // v328 pacing: fewer names at once, shorter glow
+function twkReduced(){ try{ return !!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches); }catch(e){ return false; } }
+function twinkleStop(){ TWK.on=false; TWK.lit={}; try{ document.body.removeAttribute('data-twinkle'); }catch(e){} }
+function twinkleStart(){
+twinkleStop();
+if(twkReduced()) return;
+if(typeof FILTER!=='undefined'&&FILTER!==null) return;
+if(typeof PIN!=='undefined'&&PIN) return;
+if(typeof traceStart!=='undefined'&&traceStart) return;
+if(typeof path!=='undefined'&&path&&path.length) return;
+TWK.lit={}; TWK.recent={}; TWK.lastAdd=0; TWK.on=true; // v328
+try{ document.body.setAttribute('data-twinkle','on'); }catch(e){}
+}
+function twkTick(now){ // v328
+if(!TWK.on) return;
+var lit=TWK.lit, u, cnt=0;
+for(u in lit){ if(now-lit[u].t0>=lit[u].dur){ TWK.recent[u]=now; delete lit[u]; } else cnt++; }
+if(cnt<TWKK&&now-TWK.lastAdd>=TWKEVERY){
+TWK.lastAdd=now;
+var pool=N.filter(function(n){ if(n.t!==2) return false; var u2=(''+n.id).toUpperCase();
+return !TWK.lit[u2]&&(TWK.recent[u2]==null||now-TWK.recent[u2]>18000)&&!(typeof pwGate==='function'&&pwGate(n)); });
+if(pool.length){ var n=pool[(Math.random()*pool.length)|0]; var u3=(''+n.id).toUpperCase();
+lit[u3]={t0:now, dur:TWKDUR, col:TWKCOLS[(Math.random()*TWKCOLS.length)|0], e:0}; }
+}
+}
+function twkItem(nameU){ // v328
+if(!TWK.on) return null;
+var it=TWK.lit[nameU]; if(!it) return null;
+var t=(performance.now()-it.t0)/it.dur;
+if(t<0||t>1){ it.e=0; return null; }
+it.e=Math.sin(Math.PI*t); return it;
+}
+window.twinkleStart=twinkleStart; window.twinkleStop=twinkleStop;
+try{
+['pointerdown','wheel','touchstart','keydown'].forEach(function(ev){ // v328: first interaction stops the twinkle
+document.addEventListener(ev, function(e){ try{ var _tg=e&&e.target; if(_tg&&_tg.closest&&_tg.closest('#gxWelcome,#gxCoach')) return; }catch(_){ } twinkleStop(); }, {passive:true, capture:true}); }); /* v329: dismissing the welcome or the coach tips is not a map interaction; the twinkle survives it */
+var _ff2=document.getElementById('find');
+if(_ff2){ _ff2.addEventListener('input', function(){ twinkleStop(); }); }
+}catch(e){}
 const rad=n=>{var b=(n.t===2?9:(2.2+Math.min(n.deg,26)*.17))*(n.cats>=3&&n.t!==2?1.5:1);
 var _a=PABS.get(n.i); if(_a&&PINT>0) b=b+(_a-b)*PINT;
 var _p=PSZ.get(n.i); if(_p&&PINT>0) b*=1+(_p-1)*PINT; return b;};
@@ -1260,6 +1327,8 @@ var _p=PSZ.get(n.i); if(_p&&PINT>0) b*=1+(_p-1)*PINT; return b;};
 function draw(){
 try{ var _pn=document.getElementById('pinNames'); if(_pn){ var _w=!!PIN; if(_pnWant!==_w){ _pn.hidden=!_w; _pnWant=_w; } } }catch(e){}
 if(!_fitOK && W>10 && H>10 && typeof fitAll==='function'){ try{ fitAll(); cam.z=cam.tz; }catch(e){ _fitOK=1; } }
+if(TWK.on){ if((typeof FILTER!=='undefined'&&FILTER!==null)||(typeof PIN!=='undefined'&&PIN)||(typeof traceStart!=='undefined'&&traceStart)||(typeof path!=='undefined'&&path&&path.length)) twinkleStop(); else twkTick(performance.now()); } /* v328: no time limit; the twinkle runs until the first interaction */
+if(!TWK.init){ TWK.init=true; twinkleStart(); }
 PINT+=((PIN?1:0)-PINT)*.12;
 if(!PIN&&PINT<.01&&PL.size){PL.clear();PSZ.clear();PINRMAX=0;}
 if(cam.tx!=null){ cam.x+=(cam.tx-cam.x)*.14; if(Math.abs(cam.tx-cam.x)<.4){cam.x=cam.tx;cam.tx=null;} }
@@ -1370,10 +1439,11 @@ bg.addColorStop(1, (isB?'#ffffff':hue)+'00');
 X.fillStyle=bg; X.beginPath(); X.arc(p.x,p.y,bloomR,0,7); X.fill();
 if(isB) r*=pulse;
 }
+if(PIN&&PTIER.has(n.i)&&PINT>.5){ const _pb=rnCol(n), _pbt=PTIER.get(n.i)===1, _pbr=r*(_pbt?2.7:1.9); const _pbg=X.createRadialGradient(p.x,p.y,r*0.4,p.x,p.y,_pbr); _pbg.addColorStop(0,_pb+(_pbt?'40':'26')); _pbg.addColorStop(1,_pb+'00'); X.fillStyle=_pbg; X.beginPath(); X.arc(p.x,p.y,_pbr,0,7); X.fill(); }
 X.beginPath();X.arc(p.x,p.y,Math.max(r,softAll?1.15:.8),0,7);
 if(orphan!==null && n.c===orphan){ X.fillStyle='#ff5a5a'; }
 else if(dead && n===dead){ X.fillStyle='#ff5a5a'; }
-else if(dim&&PIN&&PTIER.has(n.i)){ X.fillStyle=rnCol(n); }
+else if(dim&&PIN&&PTIER.has(n.i)){ const _pc0=rnCol(n), _pg0=hueGrad(_pc0); const _po=X.createRadialGradient(p.x-r*0.32,p.y-r*0.36,r*0.12, p.x,p.y,r*1.06); _po.addColorStop(0,_pg0[0]); _po.addColorStop(0.55,_pc0); _po.addColorStop(1,_pg0[1]); X.fillStyle=_po; }
 else if(dim&&PIN){ X.fillStyle='rgba(150,164,184,.42)'; }
 else if(dim){ X.fillStyle='rgba(96,108,125,.2)'; }
 else if(softAll){ X.fillStyle=hue+'b3'; }
@@ -1384,8 +1454,8 @@ og.addColorStop(0, gr[0]); og.addColorStop(0.55, base); og.addColorStop(1, gr[1]
 X.fillStyle=og;
 }
 X.fill();
-if(!dim && !softAll && !(dead&&n===dead) && orphan===null){
-const base=isB?'#e8eefc':hue;
+if(!softAll && !(dead&&n===dead) && orphan===null && (!dim || (PIN&&PTIER.has(n.i)))){
+const base=(dim&&PIN&&PTIER.has(n.i))?rnCol(n):(isB?'#e8eefc':hue);
 X.lineWidth=Math.max(0.5,r*0.07); X.strokeStyle=hueGrad(base)[0]+'cc'; X.stroke();
 }
 if(dead && n===dead){ X.strokeStyle='#fff'; X.lineWidth=2; X.stroke();
@@ -1394,7 +1464,7 @@ X.moveTo(p.x+r*2,p.y-r*2); X.lineTo(p.x-r*2,p.y+r*2);
 X.strokeStyle='#ff5a5a'; X.lineWidth=2; X.stroke(); }
 if(n===sel||n===hov){X.strokeStyle='#fff';X.lineWidth=1.8;X.stroke();}
 if(PIN&&PINT>.5&&PTIER.has(n.i)&&n!==PIN){ var _ct=PCUT.get(n.i)||0, _tt=PTIER.get(n.i);
-if(_tt<=2 && _ct>1 && r>=7){ X.save(); X.font='700 '+Math.round(r*1.05)+'px ui-sans-serif,-apple-system,sans-serif';
+if(_tt<=2 && _ct>1 && r>=10){ X.save(); X.font='700 '+Math.round(Math.min(r*0.95,13))+'px ui-sans-serif,-apple-system,sans-serif';
 X.textAlign='center'; X.textBaseline='middle'; X.fillStyle='rgba(12,15,20,.92)';
 X.fillText(String(_ct),p.x,p.y+0.5); X.restore(); } }
 // Three tiers. World names read first and grow as you pull back, so the map
@@ -1410,16 +1480,16 @@ const ramp=(a,b)=>Math.max(0,Math.min(1,(cam.z-a)/(b-a)));
 let label=false, fsz=9, bold=false, col='rgba(233,237,242,.85)', la=1;
 if(PIN){ label=lit.has(n.i); }
 else if(n.t===2){ label=true; fsz=wFs; bold=true; col='#fff'; }
-else if(isB){ la=ramp(.66,.98);
+else if(isB){ la=ramp(.34,.58); /* v330: super connectors arrive earlier as you lean in */
 // in a filtered single-world view, don't let super-connector names flood in
 // at low zoom either; hold until the same lean-in point as everyone else
 if((FILTER instanceof Set) && !sel && !PIN && FILTER.has(n.c) && n.t!==2){ var _nw2=FILTER.size;
-la=Math.min(la, ramp((_nw2>=2)?0.42:1.30,(_nw2>=2)?0.72:2.10)); }
-label=la>.02; fsz=Math.max(_gxMob?12:11,Math.round(wFs*(_gxMob?.6:.66))); col='#eef3ff'; /* names now reveal purely by zoom, even in the all-worlds overview */ }
+la=Math.min(la, ramp((_nw2>=2)?0.34:0.85,(_nw2>=2)?0.58:1.35)); } /* v330 */
+label=la>.02; fsz=Math.max(6,Math.min(12,Math.round(wFs*0.92*WFZ()*0.62))) /* v329: person names sized off the drawn world names, always clearly smaller */; col='#eef3ff'; /* names now reveal purely by zoom, even in the all-worlds overview */ }
 else {
 // Every writer holds a slot in the reveal, busiest first. Leaning in adds
 // names at a steady rate instead of dumping fifteen hundred in one frame.
-const a0=1.15+(n.rev==null?.5:n.rev)*1.35;
+const a0=0.58+(n.rev==null?.5:n.rev)*0.78; /* v330: writers reveal earlier, busiest first as before */
 // Inside a selected person's world the same idea applies: the people they
 // have done the most with are named first, the rest arrive as you lean in,
 // instead of a hundred and thirty names landing in one frame.
@@ -1427,7 +1497,7 @@ var litA=0;
 if(lit.has(n.i)){
 if(n.lrev==null) litA=ramp(SELZ*.62, SELZ*.85);
 else { var b0=SELZ*(.72+n.lrev*1.55); litA=ramp(b0, b0+SELZ*.34); } }
-la=Math.max(litA, ramp(a0,a0+.28));
+la=Math.max(litA, ramp(a0,a0+.24)); /* v330 */
 label=la>.02;
 /* names now reveal purely by zoom, even in the all-worlds overview */
 // filtered single-world browsing (esp. mid-trace): keep the co-writer names
@@ -1436,7 +1506,7 @@ label=la>.02;
 if((FILTER instanceof Set) && !sel && !PIN && FILTER.has(n.c) && n.t!==2){
   var _nw=FILTER.size;
   // one world held in reserve until you lean in; several worlds reveal sooner
-  var _lo=(_nw>=2)?0.42:1.30, _hi=(_nw>=2)?0.72:2.10;
+  var _lo=(_nw>=2)?0.34:0.85, _hi=(_nw>=2)?0.58:1.35; /* v330 */
   var _wz=ramp(_lo,_hi);
   la=Math.min(la, _wz*(0.45+(n.rev==null?.5:(1-Math.min(1,n.rev)))*0.55));
   label=la>.02;
@@ -1472,7 +1542,7 @@ if(PIN&&PINT>.5&&typeof PTIER!=='undefined'&&PTIER.has(n.i)&&n!==PIN){
 if(PTIER.get(n.i)===1){ col='#ffffff'; la=1; _two=1; if(fsz<13.5) fsz=13.5; }
 else if(PSHOWALL){ col='#c2ccda'; la=.92; } }
 if(_gxMob&&window._TOP20W===undefined){window._TOP20W=new Set(N.filter(function(x){return x.t===2;}).sort(function(_p,_q){return (_q.deg||0)-(_p.deg||0);}).slice(0,20).map(function(x){return x.i;}));}
-if(!(tier===2&&_gxMob&&cam.z<0.95&&window._TOP20W&&!window._TOP20W.has(n.i)&&!ROUTEN.has(n.i))) LBLS[tier].push({x:lx,y:ly,s:n.id,f:fsz,b:bold,c:col,a:la,two:_two,dx:p.x,dy:p.y});
+if(!(tier===2&&_gxMob&&cam.z<0.95&&window._TOP20W&&!window._TOP20W.has(n.i)&&!ROUTEN.has(n.i))&&!(tier===2&&pwGate(n))) LBLS[tier].push( /* v328 density gate */{x:lx,y:ly,s:n.id,f:fsz,b:bold,c:col,a:la,two:_two,dx:p.x,dy:p.y});
 }
 });
 // Second pass. Nothing that was drawn as a dot can bury a name any more, and
@@ -1481,22 +1551,22 @@ if(!(tier===2&&_gxMob&&cam.z<0.95&&window._TOP20W&&!window._TOP20W.has(n.i)&&!RO
 (function(){ var _W=LBLS[2]; if(_W.length<2) return;
   var strength=Math.max(0,Math.min(1,(1.15-cam.z)/0.55)); if(strength<=0) return;
   for(var i=0;i<_W.length;i++){ var w=_W[i];
-    var wf=Math.round(w.f*(.92+Math.max(0,Math.min(cam.z,1.5)-.95)*.55)*0.70);
+    var wf=Math.round(w.f*(.92+Math.max(0,Math.min(cam.z,1.5)-.95)*.55)*WFZ());
     X.font='700 '+wf+'px ui-sans-serif,-apple-system,sans-serif';
     var _u=(''+w.s).toUpperCase(), _pp=_u.trim().split(/\s+/);
 var _c2=_pp.length>1?_pp.pop():'', _c1=_pp.join(' ');
 var _ll=_c2?[_c1,_c2]:[_u], _mm=0, _z2;
 for(_z2=0;_z2<_ll.length;_z2++){ var _w2=X.measureText(_ll[_z2]).width+wf*0.10*_ll[_z2].length; if(_w2>_mm)_mm=_w2; }
-w._w=_mm+10; w._h=wf*(_c2?2.3:1.35); }
+w._w=_mm+16; w._h=wf*(_c2?2.14:1.1)+10; /* v327: the separation box is the visible ink (text plus outline and shadow), not the bare glyph box */ }
   for(var _z=0;_z<_W.length;_z++){ _W[_z]._ax=_W[_z].x; _W[_z]._ay=_W[_z].y; }
-for(var pass=0;pass<(_gxMob?70:45);pass++){ var moved=false;
+for(var pass=0;pass<(_gxMob?70:110);pass++){ /* v327: more passes, the bigger separation boxes need more settling */ var moved=false;
     for(var i=0;i<_W.length;i++)for(var j=i+1;j<_W.length;j++){ var a=_W[i],b=_W[j];
       var ox=(a._w+b._w)/2-Math.abs(a.x-b.x), oy=(a._h+b._h)/2-Math.abs(a.y-b.y);
-      if(ox>0&&oy>0){ moved=true; var k=(_gxMob?1.9:1.35)*strength;
+      if(ox>0&&oy>0){ moved=true; var k=(_gxMob?1.9:2.3)*strength; /* v327: firmer separation pushes */
         if(oy<=ox){ var d=(oy/2+1)*k; if(a.y<=b.y){a.y-=d;b.y+=d;}else{a.y+=d;b.y-=d;} }
         else { var d=(ox/2+1)*k; if(a.x<=b.x){a.x-=d;b.x+=d;}else{a.x+=d;b.x-=d;} } } }
     if(!moved) break; }
-  var CAP=_gxMob?150:30;
+  var CAP=_gxMob?150:115; /* v327: labels may travel further to find clear air */
   for(var _z2=0;_z2<_W.length;_z2++){ var _q2=_W[_z2];
     var _dx2=_q2.x-_q2._ax, _dy2=_q2.y-_q2._ay, _m2=Math.hypot(_dx2,_dy2);
     if(_m2>CAP){ _q2.x=_q2._ax+_dx2/_m2*CAP; _q2.y=_q2._ay+_dy2/_m2*CAP; } }
@@ -1510,7 +1580,7 @@ var _txt=L.s;
 if(_t===2){
 _txt=(''+L.s).toUpperCase();
 var _gt=Math.max(0,Math.min(1,(cam.z-.55)/.40));
-var _wf=Math.round(L.f*(.92+Math.max(0,Math.min(cam.z,1.5)-.95)*.55)*0.70);
+var _wf=Math.round(L.f*(.92+Math.max(0,Math.min(cam.z,1.5)-.95)*.55)*WFZ());
 X.font='700 '+_wf+'px ui-sans-serif,-apple-system,\'Segoe UI\',sans-serif';
 if('letterSpacing' in X) X.letterSpacing=(_wf*.10).toFixed(1)+'px';
 X.textAlign='center'; X.textBaseline='alphabetic';
@@ -1553,6 +1623,12 @@ var _l2=_sp.length>1?_sp.pop():'', _l1=_sp.join(' ');
 if(_l2){ X.fillText(_l1,L.x,L.y-L.f*0.52); X.fillText(_l2,L.x,L.y+L.f*0.52); }
 else X.fillText(_txt,L.x,L.y); }
 else X.fillText(_txt,L.x,L.y);
+if(_t===2){ var _tw=twkItem(L.s); if(_tw&&_tw.e>0){ var _te=_tw.e; X.save();
+X.globalAlpha=_te; X.shadowBlur=0; X.fillStyle=_tw.col; X.font='700 '+_wf+'px ui-sans-serif,-apple-system,sans-serif'; /* v330: flash the name as it is, same size and place, star color crossfaded over the normal draw; no glow blur and no growth, the v329 swell read as fuzz */
+if(L.two){ var _sp2=String(L.s).trim().split(/\s+/); var _l22=_sp2.length>1?_sp2.pop():''; var _l12=_sp2.join(' ');
+if(_l22){ X.fillText(_l12,L.x,L.y-L.f*0.52); X.fillText(_l22,L.x,L.y+L.f*0.52); } else X.fillText(L.s,L.x,L.y); }
+else X.fillText(L.s,L.x,L.y);
+X.restore(); } } /* v328: the name itself takes the star color; no dot glow */
 X.shadowBlur=0; X.globalAlpha=1;
 if('letterSpacing' in X) X.letterSpacing='0px';
 }
@@ -1953,7 +2029,7 @@ MAPPED=new Set();
 recenterPin();
 renderPin(); };
 window.erUnpin=function(){ PIN=null; PICKS=[]; MAPPED=new Set(); erClear(); };
-window.erStartOver=function(){ try{erUnpin();}catch(_){ try{erClear();}catch(e){} } try{ if(typeof setFilter==="function") setFilter(null); else { FILTER=null; } }catch(e){} try{ if(window.clearGenre) window.clearGenre(); }catch(_){} try{var f=document.getElementById("find"); if(f){ f.value=""; f.blur(); }}catch(e){} try{var ac=document.getElementById("acList"); if(ac)ac.hidden=true; var bp=document.getElementById("brwPanel"); if(bp)bp.hidden=true; var acw=document.querySelector(".acwrap"); if(acw)acw.classList.remove("open");}catch(e){} try{ var _lg=document.getElementById('legend'); if(_lg && window._GXNAME){ _lg.hidden=false; _lg.innerHTML='<span class="lgrow on gxrow"><span class="dot" style="background:#f9b479"></span><b>'+window._GXNAME+'</b></span>'; var _row=_lg.querySelector('.gxrow'); if(_row) _row.onclick=function(e){ if(e&&e.stopPropagation)e.stopPropagation(); var wn=byId[window._GXNAME]; if(wn){ pick(wn); } }; } }catch(_){} try{ if(window._GX) { fitAll(); try{ if(typeof draw==="function") draw(); }catch(_){} } else fitAll(); }catch(e){} };
+window.erStartOver=function(){ try{erUnpin();}catch(_){ try{erClear();}catch(e){} } try{ if(typeof setFilter==="function") setFilter(null); else { FILTER=null; } }catch(e){} try{ if(window.clearGenre) window.clearGenre(); }catch(_){} try{var f=document.getElementById("find"); if(f){ f.value=""; f.blur(); }}catch(e){} try{var ac=document.getElementById("acList"); if(ac)ac.hidden=true; var bp=document.getElementById("brwPanel"); if(bp)bp.hidden=true; var acw=document.querySelector(".acwrap"); if(acw)acw.classList.remove("open");}catch(e){} try{ var _lg=document.getElementById('legend'); if(_lg && window._GXNAME){ _lg.hidden=false; _lg.innerHTML='<span class="lgrow on gxrow"><span class="dot" style="background:#f9b479"></span><b>'+window._GXNAME+'</b></span>'; var _row=_lg.querySelector('.gxrow'); if(_row) _row.onclick=function(e){ if(e&&e.stopPropagation)e.stopPropagation(); var wn=byId[window._GXNAME]; if(wn){ pick(wn); } }; } }catch(_){} try{ if(window._GX) { fitAll(); try{ if(typeof draw==="function") draw(); }catch(_){} } else fitAll(); }catch(e){} try{ twinkleStart(); }catch(_){} };
 (function(){ var b=document.getElementById("erStart"); if(b) b.addEventListener("click", window.erStartOver); })();
 window.erPin=function(id){
 PIN=byId[id]; if(!PIN) return;
@@ -3005,6 +3081,18 @@ SW.mount();
   function rz(){ try{ if(typeof resize==='function')resize(); if(!window._GX && typeof fitAll==='function')fitAll(); draw(); sizeDatanote(); }catch(e){} }
   draw(); setTimeout(rz,80); setTimeout(rz,300); setTimeout(rz,800); setTimeout(function(){ try{ gxStep0(); }catch(e){} }, 950);
   (function(){ var X2=window.WSWS_EXPORT; if(!X2||!X2.room) return; _coachDone=true; try{ gxClearCoach(); }catch(e){} var w0=document.getElementById('gxWelcome'); if(w0)w0.remove(); var _nm=function(t){return (t||'').toLowerCase().replace(/\s*\(feat[^)]*\)/g,'').replace(/\s+/g,' ').trim();}; var _tgt=_nm(X2.room), _rk=-1, _s; for(_s=0;_s<SONGS.length;_s++){ if(SONGS[_s][0]===X2.room){ _rk=_s; break; } } if(_rk<0){ for(_s=0;_s<SONGS.length;_s++){ if(_nm(SONGS[_s][0])===_tgt){ _rk=_s; break; } } } if(_rk>=0){ setTimeout(function(){ try{ if(typeof showRoom==='function') showRoom(_rk); }catch(e){} }, 380); } })();
+  (function(){ var X3=window.WSWS_EXPORT; if(!X3||!X3.trace||!X3.trace.b) return; try{ _coachDone=true; }catch(e){} try{ gxClearCoach(); }catch(e){} var w3=document.getElementById('gxWelcome'); if(w3)w3.remove();
+  var _ta=X3.trace.a||X3.name||'', _tb=X3.trace.b;
+  var _res=function(nm){ if(byId[nm]) return byId[nm]; var q=(''+nm).toLowerCase().replace(/\s*\(feat[^)]*\)/g,'').replace(/\s+/g,' ').trim(); for(var i=0;i<N.length;i++){ if(N[i].id.toLowerCase().replace(/\s*\(feat[^)]*\)/g,'').replace(/\s+/g,' ').trim()===q) return N[i]; } return null; };
+  var _tries=0;
+  (function _go(){ _tries++;
+    var a=_res(_ta), b=_res(_tb);
+    if(a&&b){ if(a===b){ try{ pick(a); }catch(e){} return; } try{ showPath(a,b); }catch(e){} return; }
+    if(_tries<25){ setTimeout(_go,160); return; }
+    var f=document.getElementById('find'); if(f){ f.value=_tb; try{ f.dispatchEvent(new Event('input',{bubbles:true})); }catch(e){} }
+    var S_=document.getElementById('side'); if(S_){ S_.innerHTML='<button class="sclose" onclick="erClear()">\u2715</button><div class="sname">'+_tb+'</div><div class="snote">That name is not in the network data yet, so there is no path to draw. It is filled in the search box above: if it appears as you type, tap it to see their world.</div>'; S_.hidden=false; }
+  })();
+  })();
 })();
 
 /* ================= v258: chart metadata, genre worlds, shelf ================= */
