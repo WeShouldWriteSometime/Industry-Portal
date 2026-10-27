@@ -29,7 +29,7 @@
       radial-gradient(560px 380px at 88% 108%, rgba(245,130,32,.10), transparent 60%);
     animation:breathe 9s ease-in-out infinite}
   @keyframes breathe{0%,100%{opacity:.75}50%{opacity:1}}
-  .inner{position:relative;z-index:1;width:100%;max-width:880px;text-align:center}
+  .inner{position:relative;z-index:1;width:100%;max-width:1360px;text-align:center}
 
   .brandbar{position:absolute;top:24px;left:28px;z-index:2;display:flex;align-items:center;
     animation:rise .6s cubic-bezier(.2,.7,.3,1) both}
@@ -44,9 +44,11 @@
   .lead{margin:0 auto;max-width:520px;color:var(--muted);font-size:14.5px;line-height:1.62;
     animation:rise .7s .2s cubic-bezier(.2,.7,.3,1) both}
 
-  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin:32px 0 0;text-align:left}
+  .cards{display:grid;grid-template-columns:repeat(5,1fr);gap:13px;margin:26px 0 0;text-align:left}
+    @media(max-width:1180px){.cards{gap:10px;margin-top:18px}.card{padding:16px 12px 14px}.card h2{font-size:17.5px}.card p{font-size:12px;line-height:1.5}.chip{font-size:10px;padding:3px 7px}#landing{padding-top:52px;padding-bottom:20px}.glance{margin-top:12px;padding-top:9px;padding-bottom:9px}h1{font-size:30px;margin-bottom:6px}.ic{width:42px;height:42px;border-radius:12px}.kicker{margin-bottom:6px}.lead{line-height:1.55}.cards{margin-top:14px}.card{padding-bottom:12px}}
+    @media(max-width:900px){.chip{white-space:normal;font-size:9.5px;line-height:1.35}}
   .card{position:relative;background:linear-gradient(180deg,#14161c,#0e1015);
-    border:1px solid var(--line);border-radius:18px;padding:24px 22px 22px;cursor:pointer;
+    border:1px solid var(--line);border-radius:18px;padding:20px 16px 18px;cursor:pointer;
     transition:transform .28s cubic-bezier(.2,.7,.3,1),border-color .28s,box-shadow .28s;
     overflow:hidden;animation:rise .7s cubic-bezier(.2,.7,.3,1) both}
   .card:nth-child(1){animation-delay:.26s}
@@ -63,6 +65,7 @@
   .ic img{display:block}
   .eyebrow{font-size:9.5px;letter-spacing:1.9px;text-transform:uppercase;color:var(--o2);font-weight:800}
   .card h2{margin:7px 0 8px;font-size:20.5px;letter-spacing:-.2px}
+  .demotag{display:inline-block;vertical-align:3px;margin-left:9px;font-size:9.5px; letter-spacing:1.6px;text-transform:uppercase;font-weight:800;color:#20160a; background:var(--o);border-radius:20px;padding:3px 9px}
   .card p{margin:0;color:var(--muted);font-size:13.2px;line-height:1.58;min-height:62px}
   .chips{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0 0}
   .chip{font-size:10.5px;color:var(--muted);background:#171a20;border:1px solid var(--line);
@@ -201,7 +204,7 @@
   <div class="glow"></div>
   <div class="brandbar"><img data-img="word" alt="We Should Write Sometime"></div>
   <div class="inner">
-    <div class="kicker">Four ways in &middot; same rooms</div>
+    <div class="kicker">Five ways in &middot; same rooms</div>
     <h1>It all starts in <em>the writer&rsquo;s room</em>.</h1>
     <p class="lead">This whole business runs on collaboration, but there&rsquo;s never been a way to capture the room. Until now. We&rsquo;re writing it down. Songwriters get their map. Publishers, A&amp;R and labels get the view they&rsquo;ve never had. And the writer lands right where they&rsquo;ve always belonged: at the center of it all. Pull up a chair.</p>
 
@@ -245,6 +248,14 @@
          <div class="chips"><span class="chip">Power rankings</span><span class="chip">Did you know</span><span class="chip">Rooms that should happen</span><span class="chip">255B streams</span></div>
          <div class="enter">See the insights <span class="arw">&rarr;</span></div>
        </div>
+      <div class="card" role="button" tabindex="0" data-app="pricing" data-name="Pricing Tool" data-link="demo.html">
+        <div class="ic"><svg viewBox="0 0 32 32" width="30" height="30" fill="none" aria-hidden="true"><path d="M7 5h11l9 9-12 12-9-9z" stroke="#f58220" stroke-width="1.6" stroke-linejoin="round"/><circle cx="13" cy="12" r="2.2" fill="#f9b479"/><path d="M13.5 21.5l6-6" stroke="#f9b479" stroke-width="1.5" stroke-linecap="round" opacity=".8"/></svg></div>
+        <div class="eyebrow">For demos &middot; publishers &middot; labels &middot; networks</div>
+        <h2>Pricing Tool<span class="demotag">Demo</span></h2>
+        <p>The whole pricing model in one place, plus a package builder that prices a deal while you talk. Pick an organization size, set the seats, add the lines, and the breakdown builds itself.</p>
+        <div class="chips"><span class="chip">Every Room</span><span class="chip">Calendar and Catalog</span><span class="chip">Data and Discovery</span><span class="chip">Private Networks</span><span class="chip">Bundle pricing</span></div>
+        <div class="enter">Open the pricing tool <span class="arw">&rarr;</span></div>
+
 
     </div>
 
@@ -556,7 +567,7 @@
   }
 
   Array.prototype.forEach.call(document.querySelectorAll('.card'),function(c){
-    var fire=function(){open(c.dataset.app,c.dataset.name);};
+    var fire=function(){ if(c.dataset.link){ location.href=c.dataset.link; return; } open(c.dataset.app,c.dataset.name); };
     c.addEventListener('click',fire);
     c.addEventListener('keydown',function(e){
       if(e.key==='Enter'||e.key===' '){e.preventDefault();fire();}
