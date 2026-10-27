@@ -1710,7 +1710,7 @@ else if(!n && !_nb){
 if((fSet()&&fSet().size) || (path&&path.length) || (typeof ROUTES!=='undefined'&&ROUTES.length)) erClear();
 }
 }
-else if(_wl){ gxOpenWorld(_wl.id); }
+else if(_wl){ var _pn=PIN?byId[_wl.id]:null; if(_pn&&(PTIER.has(_pn.i)||ELEVSET.has(_pn.i))){ pick(_pn); } else gxOpenWorld(_wl.id); }
 else if(n){ pick(n); }
 else if(!PIN) erClear();
 }
